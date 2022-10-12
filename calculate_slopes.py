@@ -6,7 +6,6 @@
 
 import numpy as np
 import pandas as pd
-#import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
@@ -22,7 +21,7 @@ def read_csv_dropcol(filename, drop_first_col=True):
 def find_bottom_idx(x, a, b, dx_treshold=10):
     "Finds index of 'x' before maximum derivative (between indexes 'a' and 'b')"
     if a>b:
-        print("find_bottom(): 'a' must be smaller than 'b'.")
+        print("find_bottom_idx(): 'a' must be smaller than 'b'.")
         return
     # derivative values
     x = x[a:b+1]
@@ -34,10 +33,11 @@ def find_all_bottoms_idx(df, dx_treshold=10):
     for i in range(df.shape[1]):
         x = df.iloc[:,i] #:100
         try:
-            idx_dx = find_bottom_idx(x, 280, 310, dx_treshold=dx_treshold)
+            a, b = 280, 310
+            idx_dx = find_bottom_idx(x, a, b, dx_treshold=dx_treshold)
         except IndexError:
-            print("find_all_bottoms_dx(): IndexError")
-            idx_dx = 0
+            print("INFO: find_all_bottoms_dx(): IndexError\n index not found.")
+            idx_dx = a
         mins.append(idx_dx)
     return mins
 
@@ -66,7 +66,7 @@ def create_csv_slopes(input_filename, idx_1, idx_2, slopes, y_inter):
     new_df = pd.DataFrame(data)
     new_name = input_filename + "_slopes.csv"
     new_df.to_csv(new_name, index = False)
-    print(f"create_csv_slopes(): Created file - '{new_name}'")
+    print(f"INFO create_csv_slopes(): Created file - '{new_name}'")
     return new_name
 
 def plotly_df_slopes(df, csvfile, title=""):
@@ -111,32 +111,38 @@ def plotly_df_slopes(df, csvfile, title=""):
 
 if __name__ == "__main__":
     import sys
-    from argparse import ArgumentParser
+    from argparse import ArgumentParser, RawTextHelpFormatter
+    import textwrap
     #from pathlib import Path
     #from datetime import date
-
+    
     print("")
-
+    script = f"{__file__.split('/')[-1]}"
+    
     usage = (
-        "%(prog)s datafile.csv [-h] [-o] [-i]"
+        "%(prog)s datafile.csv [-h] [-i] [-o] [-d]"
         )
+    
+    description = """
+    Calculates slope between indexes, for each column of the given datafile and
+    plots it; the title graph is the input filename.
+    Creates two new files:
+        "*_slopes.html" - file with interactive plots.
+        "*_slopes.csv" - file with slope & y-intercept values.
+        """
 
-    parser = ArgumentParser(
-        description="""    Calculates slope between indexes, for each column of
-                        the given datafile and plots it; the title graph is the
-                        input filename.
-                        \n\n""",
-        usage=usage)
+    parser = ArgumentParser(formatter_class=RawTextHelpFormatter,
+        description=textwrap.dedent(description), usage=usage)
     
     parser.add_argument('datafile', type=str,
                         help="Data file (csv format).")
+    parser.add_argument('-i', '--indexes', type=str, default='', metavar='',
+                        help="""File with idx_1 & idx_2 of each column (csv format).\
+                            \n or index pair separated by a comma (eg. "8,15").""")
     parser.add_argument('-o', '--out_prefix', default='', metavar='',
                         help="Prefix name for the output files.")
-    parser.add_argument('-i', '--indexes', type=str, default='', metavar='',
-                        help="""File with idx_1 & idx_2 of each column (csv format).
-                                or index pair separated by a comma (eg. 8,15).""")
     parser.add_argument('-d', '--drop_first', default=False, metavar='',
-                        help="Boolean; if True, drops first column of input file.")
+                        help="Boolean; if True, drops first column of input file.\n\n")
 
     args = parser.parse_args()
 
@@ -150,20 +156,30 @@ if __name__ == "__main__":
     if out_prefix == "": out_prefix = datafile[:-4]
     
     if indexes != "":
-        try: indexes = pd.read_csv(indexes)
+        try:
+            indexes = pd.read_csv(indexes)
+            idx_1 = indexes[:,0].values
+            idx_2 = indexes[:,1].values
+        
         except FileNotFoundError:
-            print("")
-            
-            idx_1, idx_2 = ("23,56").split(",")
+            print("Taking index pair provided")
+            #idx_1, idx_2 = ("23,56").split(",")
+            idx_1, idx_2 = (indexes).split(",")
             idx_1, idx_2 = int(idx_1), int(idx_2)
         
     else: # indexes == ""
-        spike1_idx = 70 # first index = 35 seconds
-        min2_idx = find_all_bottoms_idx(df) # second index
-            
-
-    slopes, y_inter = find_slope_all(df, spike1_idx, min2_idx)    
-    csvfile = create_csv_slopes(out_prefix, spike1_idx, min2_idx, slopes, y_inter)
+        #spike1_idx = 70 # first index = 35 seconds
+        #min2_idx = find_all_bottoms_idx(df) # second index
+        print("\nSearch for indexes not implemented\n")
+        sys.exit()
+    
+    # Calculate linear curve coeficients
+    
+    # MAKE DISTINCTION BETWEEN LISTS AND INTS
+    slopes, y_inter = find_slope_all(df, idx_1, idx_2)    
+    
+    # Create cs file: 
+    csvfile = create_csv_slopes(out_prefix, idx_1, idx_2, slopes, y_inter)
 
     title = datafile.split("/")[-1]
     fig = plotly_df_slopes(df, csvfile, title=title[:-4])
@@ -171,6 +187,7 @@ if __name__ == "__main__":
     # saves figure in html
     new_html = csvfile[:-4] + ".html"
     fig.write_html(file=new_html, auto_play=False)
-    print(f"calculate_slopes.py: New file created - '{new_html}'")
-
+    print(f"INFO {script}: New file created - '{new_html}'")
+    
+    
     sys.exit()
