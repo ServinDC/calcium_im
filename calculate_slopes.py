@@ -118,7 +118,7 @@ if __name__ == "__main__":
 	print("")
 
 	usage = (
-		"%(prog)s datafile.csv [-h] [-o] [-i]"
+		"%(prog)s datafile.csv [-h] [-o] [-i] "
 		)
 
 	parser = ArgumentParser(
