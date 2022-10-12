@@ -1,7 +1,11 @@
 # calcium_im
 Python scripts to analyze calcium imaging data.
 
-Python libraries nedded:
-`numpy`
-`pandas`
-`plotly`
+Libraries needed:
+`numpy`,
+`pandas`,
+`plotly`.
+
+## Scripts
+
+### `calculate_slopes.py`
