@@ -15,14 +15,15 @@ Creates two new files:
 "*_slopes.html" - file with interactive plots.
 "*_slopes.csv" - file with slope & y-intercept values.
 
----
+--
 
 **Example use:**
-Using file with a index pair for each datafile column:
+
+Using a file with a index pair for each datafile column:
 ```
 python ./calculate_slopes.py datafile.csv -i datafile_idx.csv
 ```
-Using same index pair for each column:
+Using the same index pair for each column:
 ```
 python ./calculate_slopes.py datafile.csv -i "8,15"
 ```
