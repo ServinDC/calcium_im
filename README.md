@@ -50,7 +50,7 @@ idx1,idx2
 ```
 
 <details>
-<summary>Example files</summary>
+<summary>**Example files**</summary>
   
 Example file `datafile_idx.csv` (one row per each datafile column):
 ```
