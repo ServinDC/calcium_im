@@ -48,6 +48,11 @@ idx1,idx2
 71,305
 ```
 
+---
 
 #### `find_indexes.py`
 
+Printing the script help:
+```
+python ./find_indexes.py -h
+```
