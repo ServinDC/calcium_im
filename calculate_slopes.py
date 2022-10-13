@@ -17,52 +17,39 @@ def read_csv_dropcol(filename, drop_first_col=True):
         # resets the index to begin with zero
         df.reset_index(drop=True, inplace=True)
         return df
+    return pd.read_csv(filename)
 
-def find_bottom_idx(x, a, b, dx_treshold=10):
-    "Finds index of 'x' before maximum derivative (between indexes 'a' and 'b')"
-    if a>b:
-        print("find_bottom_idx(): 'a' must be smaller than 'b'.")
-        return
-    # derivative values
-    x = x[a:b+1]
-    idx_dx = np.argwhere(np.gradient(x)>dx_treshold)[0,0] -1
-    return idx_dx + a
-
-def find_all_bottoms_idx(df, dx_treshold=10):
-    mins = []
-    for i in range(df.shape[1]):
-        x = df.iloc[:,i] #:100
-        try:
-            a, b = 280, 310
-            idx_dx = find_bottom_idx(x, a, b, dx_treshold=dx_treshold)
-        except IndexError:
-            print("INFO: find_all_bottoms_dx(): IndexError\n index not found.")
-            idx_dx = a
-        mins.append(idx_dx)
-    return mins
-
-def find_slope_all(df, idx_1, idx_2, dx_treshold=10):
+def find_slope_all(df, idx_1, idx_2):
     """ Fits line between indexes and returns slope and intercept
-        type(idx_1)=int, type(idx_2)=list
+        type(idx_1)=int or type(idx_1)=array
     """
     slopes, y_inter = [], []
-    for i in range(df.shape[1]):
-        x = df.iloc[:,i]
-        y = x[idx_1:idx_2[i]+1]
-        z = (df.index)[idx_1:idx_2[i]+1]
-        a, b = np.polyfit(x=z, y=y, deg=1)
-        slopes.append(a)
-        y_inter.append(b)
+    if type(idx_1) != int:                  # if idx_1 is an array
+        for i in range(len(df.columns)):
+            x = df.iloc[:,i]
+            y = x[idx_1[i]:idx_2[i]+1]
+            z = (df.index)[idx_1[i]:idx_2[i]+1]
+            a, b = np.polyfit(x=z, y=y, deg=1)
+            slopes.append(a)
+            y_inter.append(b)
+    else:                                   # if idx_1 is an int
+        for i in range(len(df.columns)):
+            x = df.iloc[:,i]
+            y = x[idx_1:idx_2+1]
+            z = (df.index)[idx_1:idx_2+1]
+            a, b = np.polyfit(x=z, y=y, deg=1)
+            slopes.append(a)
+            y_inter.append(b)
     return slopes, y_inter
 
 def create_csv_slopes(input_filename, idx_1, idx_2, slopes, y_inter):
     """idx_1, idx_2, slope, y-intercept
             returns name of new file
     """
-    data = {'idx_1': idx_1,
-                    'idx_2': idx_2,
-                    'slope': slopes,
-                    'y-intercept': y_inter,}
+    data = {'idx1': idx_1,
+            'idx2': idx_2,
+            'slope': slopes,
+            'y-intercept': y_inter,}
     new_df = pd.DataFrame(data)
     new_name = input_filename + "_slopes.csv"
     new_df.to_csv(new_name, index = False)
@@ -119,9 +106,7 @@ if __name__ == "__main__":
     print("")
     script = f"{__file__.split('/')[-1]}"
     
-    usage = (
-        "%(prog)s datafile.csv [-h] [-i] [-o] [-d]"
-        )
+    usage = ("%(prog)s datafile.csv [-h] [-i] [-o] [-d]")
     
     description = """
     Calculates slope between indexes, for each column of the given datafile and
@@ -141,7 +126,7 @@ if __name__ == "__main__":
                             \n or index pair separated by a comma (eg. "8,15").""")
     parser.add_argument('-o', '--out_prefix', default='', metavar='',
                         help="Prefix name for the output files.")
-    parser.add_argument('-d', '--drop_first', default=False, metavar='',
+    parser.add_argument('-d', '--drop_first', default=True, metavar='',
                         help="Boolean; if True, drops first column of input file.\n\n")
 
     args = parser.parse_args()
@@ -149,18 +134,17 @@ if __name__ == "__main__":
     datafile = args.datafile
     out_prefix = args.out_prefix
     indexes = args.indexes
+    drop_first = args.drop_first
 
-    df = read_csv_dropcol(datafile)
-    
+    df = read_csv_dropcol(datafile, drop_first_col=drop_first)
+        
     # default output name is the input filename
     if out_prefix == "": out_prefix = datafile[:-4]
     
     if indexes != "":
         try:
             indexes = pd.read_csv(indexes)
-            idx_1 = indexes[:,0].values
-            idx_2 = indexes[:,1].values
-        
+            idx_1, idx_2 = indexes.iloc[:,:2].values.T
         except FileNotFoundError:
             print("Taking index pair provided")
             #idx_1, idx_2 = ("23,56").split(",")
@@ -170,15 +154,16 @@ if __name__ == "__main__":
     else: # indexes == ""
         #spike1_idx = 70 # first index = 35 seconds
         #min2_idx = find_all_bottoms_idx(df) # second index
-        print("\nSearch for indexes not implemented\n")
+        print("ERROR: Search for indexes not implemented;\n",
+              "       provide csv file with indexes.\n")
         sys.exit()
     
     # Calculate linear curve coeficients
     
-    # MAKE DISTINCTION BETWEEN LISTS AND INTS
+    # Make lists with linear fit parameters ( a*x + b )
     slopes, y_inter = find_slope_all(df, idx_1, idx_2)    
     
-    # Create cs file: 
+    # Create csv file: 
     csvfile = create_csv_slopes(out_prefix, idx_1, idx_2, slopes, y_inter)
 
     title = datafile.split("/")[-1]
@@ -191,3 +176,12 @@ if __name__ == "__main__":
     
     
     sys.exit()
+
+
+indexes = pd.read_csv("../data/trazos ideales_idx.csv")
+df = read_csv_dropcol("../data/trazos ideales.csv")
+
+slopes, y_inter = find_slope_all(df, idx_1, idx_2)    
+
+out_prefix = "../data/trazos ideales"
+csvfile = create_csv_slopes(out_prefix, idx_1, idx_2, slopes, y_inter)
