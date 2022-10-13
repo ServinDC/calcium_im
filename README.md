@@ -18,15 +18,15 @@ Creates two new files:
 **Example use:**
 
 Printing the script help:
-```
+```bash
 python ./calculate_slopes.py -h
 ```
 Using a file with a index pair for each datafile column:
-```
+```bash
 python ./calculate_slopes.py datafile.csv -i datafile_idx.csv
 ```
 Using the same index pair for each column:
-```
+```bash
 python ./calculate_slopes.py datafile.csv -i "8,15"
 ```
 
@@ -53,6 +53,6 @@ idx1,idx2
 #### `find_indexes.py`
 
 Printing the script help:
-```
+```bash
 python ./find_indexes.py -h
 ```
