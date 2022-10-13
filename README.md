@@ -32,7 +32,7 @@ python ./calculate_slopes.py datafile.csv -i "8,15"
 ```
 
 <details>
-<summary><bf>Example files</bf></summary>
+<summary><b>Example files</b></summary>
 
 Example file `datafile_idx.csv` (one row per each datafile column):
 ```
