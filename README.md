@@ -15,10 +15,12 @@ Creates two new files:
 "*_slopes.html" - file with interactive plots.
 "*_slopes.csv" - file with slope & y-intercept values.
 
---
-
 **Example use:**
 
+Printing the script help:
+```
+python ./calculate_slopes.py -h
+```
 Using a file with a index pair for each datafile column:
 ```
 python ./calculate_slopes.py datafile.csv -i datafile_idx.csv
@@ -27,8 +29,6 @@ Using the same index pair for each column:
 ```
 python ./calculate_slopes.py datafile.csv -i "8,15"
 ```
-
----
 
 Example file `datafile.csv` with 3 columns:
 ```
@@ -49,5 +49,5 @@ idx1,idx2
 ```
 
 
-
+#### `find_indexes.py`
 
