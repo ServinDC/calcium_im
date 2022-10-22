@@ -151,8 +151,7 @@ if __name__ == "__main__":
         except FileNotFoundError:
             print("Taking index pair provided")
             #idx_1, idx_2 = ("23,56").split(",")
-            idx_1, idx_2 = (indexes).split(",")
-            idx_1, idx_2 = int(idx_1), int(idx_2)
+            idx_1, idx_2 = map(int, (indexes).split(",")) # as int values
         
     else: # indexes == ""
         #spike1_idx = 70 # first index = 35 seconds

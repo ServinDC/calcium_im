@@ -34,14 +34,6 @@ python ./calculate_slopes.py datafile.csv -i "8,15"
 <details>
 <summary><b>Example files</b></summary>
 
-Example file `datafile_idx.csv` (one row per each datafile column):
-```
-idx1,idx2
-70,307
-72,300
-71,305
-```
-
 Example file `datafile.csv` with 3 columns:
 ```
 ,cell1,cell2,cell3
@@ -51,7 +43,14 @@ Example file `datafile.csv` with 3 columns:
 4,126.026,141.889,138.86
 5,125.856,140.537,139.011
 ```
-  
+
+Example file `datafile_idx.csv` (one row per each datafile column):
+```
+idx1,idx2
+70,307
+72,300
+71,305
+```  
 </details>
 
 ---
