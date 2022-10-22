@@ -71,13 +71,13 @@ def plotly_df_slopes(df, csvfile, title=""):
     for i in range(n):
         try:
             z = df.iloc[:,i]
-            s, m, a, b = df_slopes.iloc[i,:] # spike, min, ax+b
-            line = z[int(s):int(m)]
-            def f(x): return (a)*x+b
             fig.add_trace(go.Scatter(x=df.index, y=z,
                                      line=dict(color="#0069b9"), ),
                           row=i//n_cols+1, col=i%n_cols+1 )
             # linear fit
+            s, m, a, b = df_slopes.iloc[i,:] # spike, min, ax+b
+            line = z[int(s):int(m)]
+            def f(x): return (a)*x+b
             z = f(line.index)
             w = line.index
             fig.add_trace(go.Scatter(x=w, y=z, line=dict(color="#cc0000"), ),
