@@ -3,7 +3,6 @@
 """
 @author: servindc
 """
-
 import numpy as np
 import pandas as pd
 from plotly.subplots import make_subplots
@@ -103,11 +102,11 @@ if __name__ == "__main__":
     import sys
     from argparse import ArgumentParser, RawTextHelpFormatter
     import textwrap
-    #from pathlib import Path
-    #from datetime import date
+    from pathlib import Path
     
     print("")
-    script = f"{__file__.split('/')[-1]}"
+    script = Path(__file__).name
+    #script = f"{__file__.split('/')[-1]}"
     
     usage = ("%(prog)s datafile.csv [-h] [-i] [-o] [-d]")
     
@@ -140,6 +139,7 @@ if __name__ == "__main__":
     drop_first = args.drop_first
 
     df = read_csv_dropcol(datafile, drop_first_col=drop_first)
+    filepath = Path(datafile)
         
     # default output name is the input filename
     if out_prefix == "": out_prefix = datafile[:-4]
@@ -165,9 +165,8 @@ if __name__ == "__main__":
     
     # Create csv file: 
     csvfile = create_csv_slopes(out_prefix, idx_1, idx_2, slopes, y_inter)
-
-    title = datafile.split("/")[-1]
-    fig = plotly_df_slopes(df, csvfile, title=title[:-4])
+    
+    fig = plotly_df_slopes(df, csvfile, title=filepath.stem)
 
     # saves figure in html
     new_html = csvfile[:-4] + ".html"

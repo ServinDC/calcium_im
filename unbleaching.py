@@ -48,9 +48,11 @@ if __name__ == "__main__":
     import sys
     from argparse import ArgumentParser, RawTextHelpFormatter
     import textwrap
+    from pathlib import Path
     
     print("")
-    script = f"{__file__.split('/')[-1]}"
+    #script = f"{__file__.split('/')[-1]}"
+    script = Path(__file__).name
 
     usage = ("%(prog)s datafile.csv [-h] [-o] [-d]")
     description = """Minimizes the bleaching effect by adding the extrapolated

@@ -3,8 +3,6 @@
 """
 @author: servindc
 """
-
-import numpy as np
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
@@ -30,8 +28,7 @@ def plotly_df(df, title=""):
                         shared_yaxes=True,# rows x cols size necessary to use h_spacing
                         specs = [[{} for i in range(n_cols)] for j in range(n_rows)],
                         horizontal_spacing = 0.02, vertical_spacing = 0.03)
-    # plot dataframe columns:
-    for i in range(n):
+    for i in range(n): # plot dataframe columns
         try:
             z = df.iloc[:,i]
             fig.add_trace(go.Scatter(x=df.index, y=z,
@@ -51,11 +48,11 @@ if __name__ == "__main__":
     import sys
     from argparse import ArgumentParser, RawTextHelpFormatter
     import textwrap
-    #from pathlib import Path
-    #from datetime import date
+    from pathlib import Path
     
     print("")
-    script = f"{__file__.split('/')[-1]}"
+    #script = f"{__file__.split('/')[-1]}"
+    script = Path(__file__).name
     
     usage = ("%(prog)s datafile.csv [-h] [-o] [-d]")
     
@@ -79,14 +76,14 @@ if __name__ == "__main__":
     datafile = args.datafile
     out_prefix = args.out_prefix
     drop_first = args.drop_first
-
+    
     df = read_csv_dropcol(datafile, drop_first_col=drop_first)
+    filepath = Path(datafile)
         
     # default output name is the input filename
     if out_prefix == "": out_prefix = datafile[:-4]
 
-    title = datafile.split("/")[-1]
-    fig = plotly_df(df, title=title[:-4])
+    fig = plotly_df(df, title=filepath.stem) # filename without extentsion
 
     # saves figure in html
     new_html = out_prefix + ".html"
