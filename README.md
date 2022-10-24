@@ -1,17 +1,23 @@
 # calcium_im
-Python scripts to analyze calcium imaging data.
+Python scripts to analyze calcium imaging data response signals.
 
-Libraries needed:
-`numpy`,
-`pandas`,
-`plotly`.
+Libraries needed: `numpy`, `pandas`, `plotly`, `scipy`.
+
+script|description
+-----:|:-------
+`calculate_slopes.py`| Calculates the slope of the linear fit between the provided indexes.
+`plotly_df.py`| Creates interactive plots of a csv dataframe.
+`unbleaching.py`| Decreases the magnitude of the photobleaching effect.
 
 ## Scripts
 
-#### `calculate_slopes.py`
+### `calculate_slopes.py`
+
+<details>
+<summary><b>More info</b></summary>
 
 Calculates slope between indexes, for each column of the given datafile and plots it; the title graph is the input filename.
-Creates two new files:
+New files created:
 
 "`*_slopes.html`" - file with interactive plots.
 "`*_slopes.csv`" - file with slope & y-intercept values.
@@ -30,7 +36,6 @@ Using the same index pair for each column:
 ```bash
 python ./calculate_slopes.py datafile.csv -i "8,15"
 ```
-
 <details>
 <summary><b>Example files</b></summary>
 
@@ -52,12 +57,30 @@ idx1,idx2
 71,305
 ```  
 </details>
+</details>
 
 ---
 
-#### `find_indexes.py`
+### `plotly_df.py`
+
+<details>
+<summary><b>More info</b></summary>
 
 Printing the script help:
 ```bash
-python ./find_indexes.py -h
+python ./plotly_df.py -h
 ```
+</details>
+
+---
+
+### `unbleaching.py`
+
+<details>
+<summary><b>More info</b></summary>
+
+Printing the script help:
+```bash
+python ./unbleaching.py -h
+```
+</details>
