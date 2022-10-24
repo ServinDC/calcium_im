@@ -1,5 +1,5 @@
 # calcium_im
-Python scripts to analyze calcium imaging data response signals.
+Python scripts to analyze the response signals of calcium imaging data.
 
 Libraries needed: `numpy`, `pandas`, `plotly`, `scipy`.
 
@@ -9,7 +9,7 @@ script|description| raw file link
 `plotly_df.py`| Creates interactive plots of a csv dataframe. | [**link**](https://raw.githubusercontent.com/ServinDC/calcium_im/main/plotly_df.py)
 `unbleaching.py`| Decreases the magnitude of the photobleaching effect. | [**link**](https://raw.githubusercontent.com/ServinDC/calcium_im/main/unbleaching.py)
 
-To download a script, click the _raw file link_ and save it with `ctrl` + `S`.
+To download a script, click the _raw file link_ and save it with **`ctrl`** + **`S`**.
 
 ## Scripts
 
