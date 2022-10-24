@@ -3,6 +3,8 @@ Python scripts to analyze the response signals of calcium imaging data.
 
 Libraries needed: `numpy`, `pandas`, `plotly`, `scipy`.
 
+## Scripts
+
 script|description| raw file link
 -----:|:----------|:------------:
 `calculate_slopes.py`| Calculates the slope of the linear fit between the provided indexes.| [**link**](https://raw.githubusercontent.com/ServinDC/calcium_im/main/calculate_slopes.py)
@@ -11,7 +13,7 @@ script|description| raw file link
 
 To download a script, click the _raw file link_ and save it with **`ctrl`** + **`S`**.
 
-## Scripts
+---
 
 ### `calculate_slopes.py`
 
