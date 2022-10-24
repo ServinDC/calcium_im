@@ -3,11 +3,13 @@ Python scripts to analyze calcium imaging data response signals.
 
 Libraries needed: `numpy`, `pandas`, `plotly`, `scipy`.
 
-script|description
------:|:-------
-`calculate_slopes.py`| Calculates the slope of the linear fit between the provided indexes.
-`plotly_df.py`| Creates interactive plots of a csv dataframe.
-`unbleaching.py`| Decreases the magnitude of the photobleaching effect.
+script|description| raw file link
+-----:|:----------|:------------:
+`calculate_slopes.py`| Calculates the slope of the linear fit between the provided indexes.| [**link**](https://raw.githubusercontent.com/ServinDC/calcium_im/main/calculate_slopes.py)
+`plotly_df.py`| Creates interactive plots of a csv dataframe. | [**link**](https://raw.githubusercontent.com/ServinDC/calcium_im/main/plotly_df.py)
+`unbleaching.py`| Decreases the magnitude of the photobleaching effect. | [**link**](https://raw.githubusercontent.com/ServinDC/calcium_im/main/unbleaching.py)
+
+To download a script, click the _raw file link_ and save it with `ctrl` + `S`.
 
 ## Scripts
 

@@ -54,7 +54,7 @@ if __name__ == "__main__":
     #script = f"{__file__.split('/')[-1]}"
     script = Path(__file__).name
 
-    usage = ("%(prog)s datafile.csv [-h] [-o] [-d]")
+    usage = ("%(prog)s datafile.csv [-h] [-o] [-d] [-i]")
     description = """Minimizes the bleaching effect by adding the extrapolated
     linear fitting of the initial segment of each column data.
     """
