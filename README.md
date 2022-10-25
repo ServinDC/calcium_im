@@ -95,4 +95,9 @@ Process datafile:
 ```bash
 python ./unbleaching.py datafile.csv
 ```
+
+```math
+f_{new} := f_{raw} + (k_{basal} - \text{fit}(f_{raw})
+```
+
 </details>
