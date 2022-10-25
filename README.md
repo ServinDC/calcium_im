@@ -28,7 +28,7 @@ New files created:
 
 **Example use:**
 
-Printing the script help:
+Print the script help:
 ```bash
 python ./calculate_slopes.py -h
 ```
@@ -70,9 +70,13 @@ idx1,idx2
 <details>
 <summary><b>More info</b></summary>
 
-Printing the script help:
+Print the script help:
 ```bash
 python ./plotly_df.py -h
+```
+Create interactive plots for each column of datafile.csv:
+```bash
+python ./plotly_df.py datafile.csv
 ```
 </details>
 
@@ -83,8 +87,12 @@ python ./plotly_df.py -h
 <details>
 <summary><b>More info</b></summary>
 
-Printing the script help:
+Print the script help:
 ```bash
 python ./unbleaching.py -h
+```
+Process datafile:
+```bash
+python ./unbleaching.py datafile.csv
 ```
 </details>
