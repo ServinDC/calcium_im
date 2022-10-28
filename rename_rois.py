@@ -28,7 +28,7 @@ if __name__ == "__main__":
     #script = f"{__file__.split('/')[-1]}"
     script = Path(__file__).name
     
-    usage = ("%(prog)s folder_with_roi_files/ [-h] [-o] [-d]")
+    usage = ("%(prog)s folder_with_roi_files [-h] [-o]")
     
     description = """
     For the .roi files inside the given directory, finds which ones are cell or
