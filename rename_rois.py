@@ -6,7 +6,6 @@
 from pathlib import Path
 from roifile import ImagejRoi
 from shapely.geometry import Polygon, Point
-import shutil
 
 def str2roi(filename):
     roi_path = Path(filename)
@@ -23,6 +22,8 @@ if __name__ == "__main__":
     import sys
     from argparse import ArgumentParser, RawTextHelpFormatter
     import textwrap
+    import shutil
+    from zipfile import ZipFile
     
     print("")
     #script = f"{__file__.split('/')[-1]}"
@@ -54,6 +55,19 @@ if __name__ == "__main__":
     # path object
     rois_path = Path(rois_dir)
     out_path = Path(output_dir)
+    
+    if rois_path.suffix == ".zip":
+        unzipped = rois_path.parent.joinpath(rois_path.stem)
+        if not unzipped.exists():
+            # unzip folder
+            with ZipFile(rois_path, 'r') as zip:
+                zip.extractall(path=unzipped)
+            print(f"\nINFO Creating unzipped folder: {unzipped}\n")
+        else:
+            print(f"\nINFO Using existing folder: {unzipped}\n")
+        rois_path = unzipped
+    print(rois_path)
+    
     # list of all .roi filenames - alphabetycal order
     roi_files = sorted(rois_path.glob("*.roi"))
     print(f"INFO Founded {len(roi_files)} roi files in the given directory.\n")
@@ -95,10 +109,13 @@ if __name__ == "__main__":
         # old full paths
         old_cell = rois_path.joinpath(key)             # cell
         old_nucl = rois_path.joinpath(roi_pairs[key])  # nucleus
-        # copy file contents
+        # copy file contents with new names
         s = shutil.copy(old_cell, new_cell)
         print(f"INFO Created new file: {s}")
         s = shutil.copy(old_nucl, new_nucl)
         print(f"INFO Created new file: {s}\n")
+        # ziped folder
+    s = shutil.make_archive(out_path, "zip", out_path)
+    print(f"INFO Created new file: {s}\n")
 
     sys.exit()

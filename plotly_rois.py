@@ -3,14 +3,8 @@
 """
 @author: servindc
 """
-
 from roifile import ImagejRoi
 from shapely.geometry import Polygon
-
-import plotly.graph_objects as go
-#from plotly.subplots import make_subplots
-import plotly.io as pio
-pio.renderers.default='browser'
 
 def str2roi(filename):
     roi_path = Path(filename)
@@ -28,7 +22,10 @@ if __name__ == "__main__":
     from argparse import ArgumentParser, RawTextHelpFormatter
     import textwrap
     from pathlib import Path
-    import numpy as np
+    from zipfile import ZipFile
+    import plotly.graph_objects as go
+    import plotly.io as pio
+    pio.templates.default='plotly_dark'
     
     print("")
     #script = f"{__file__.split('/')[-1]}"
@@ -53,12 +50,34 @@ if __name__ == "__main__":
     
     # path object
     rois_path = Path(rois_dir)
-    out_path = Path(output_dir)
+    if output_dir != "":
+        out_path = Path(output_dir)
+        out_path = out_path.parent.joinpath(out_path.stem).with_suffix(".html")
+    else: 
+        new_html = f"rois_plotly_{rois_path.name}.html"
+        out_path = rois_path.joinpath(new_html)
+    
+    if rois_path.suffix == ".zip":
+        unzipped = rois_path.parent.joinpath(rois_path.stem)
+        if not unzipped.exists():
+            # unzip folder
+            with ZipFile(rois_path, 'r') as zip:
+                zip.extractall(path=unzipped)
+            print(f"\nINFO Creating unzipped folder: {unzipped}\n")
+        else:
+            print(f"\nINFO Using existing folder: {unzipped}\n")
+        rois_path = unzipped
+
+    # Creates output directory
+    #try: out_path.mkdir()
+    #except FileExistsError:
+    #    print(f"INFO Output directory already exists: '{out_path}'\n")
+    
     # list of all .roi filenames - alphabetycal order
     roi_files = sorted(rois_path.glob("*.roi"))
     
     # new figure
-    fig = go.Figure(layout=go.Layout(title= rois_dir))
+    fig = go.Figure(layout=go.Layout(title=rois_path.name))
     for i, r in enumerate(roi_files):
         # roi object
         #imagej_roi = ImagejRoi.fromfile(r)
@@ -66,8 +85,6 @@ if __name__ == "__main__":
         #pol = roi2polygon(imagej_roi)
         pol = str2polygon(r)
         X, Y = pol.exterior.xy
-        print(r.name, " ", int(np.mean(Y)), int(np.mean(X)))
-        
         polygon = go.Scatter(
             x=list(X),
             y=list(Y),
@@ -79,11 +96,11 @@ if __name__ == "__main__":
             )
         fig.add_trace(polygon)
     #fig.show()
-    new_html = "rois_plotly.html"
-    fig.write_html(file=out_path.joinpath(new_html), auto_play=False)
+    #new_html = f"rois_plotly_{rois_path.name}.html"
+    #
+    #new_file = out_path.joinpath(new_html)
+    fig.write_html(file=out_path, auto_play=False)
+    print(f"\nINFO Created new file: {out_path}\n")
     
     sys.exit()
 ################################################################################
-
-
-
