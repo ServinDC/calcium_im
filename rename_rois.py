@@ -7,15 +7,29 @@ from pathlib import Path
 from roifile import ImagejRoi
 from shapely.geometry import Polygon, Point
 
-def str2roi(filename):
+def str2polygon(filename):
     roi_path = Path(filename)
-    return ImagejRoi.fromfile(roi_path)
-
-def roi2polygon(imagej_roi):
+    imagej_roi = ImagejRoi.fromfile(roi_path)
     return Polygon(imagej_roi.coordinates())
 
-def str2polygon(filename):
-    return roi2polygon(str2roi(filename))
+def create_roi_dicts(roi_files):
+    roi_areas = {}              # {fname: roi_area}
+    roi_centroid = {}           # {fname: centroid}
+    roi_poly = {}               # {fname: polyygon}
+    for fname in roi_files:
+        p = str2polygon(fname)
+        roi_poly[fname.name] = p
+        roi_areas[fname.name] = p.area  # tmp list
+        roi_centroid[fname.name] = [x[0] for x in p.centroid.xy]
+    return roi_poly, roi_areas, roi_centroid
+
+
+def rename_rois_dir():
+    return 0
+
+#def rename_rois_zip(zip_path):
+#    return 0
+
 
 ################################################################################
 if __name__ == "__main__":
@@ -23,10 +37,9 @@ if __name__ == "__main__":
     from argparse import ArgumentParser, RawTextHelpFormatter
     import textwrap
     import shutil
-    from zipfile import ZipFile
+    #from zipfile import ZipFile
     
     print("")
-    #script = f"{__file__.split('/')[-1]}"
     script = Path(__file__).name
     
     usage = ("%(prog)s folder_with_roi_files [-h] [-o]")
@@ -41,7 +54,7 @@ if __name__ == "__main__":
         """
 
     parser = ArgumentParser(formatter_class=RawTextHelpFormatter,
-        description=textwrap.dedent(description), usage=usage)
+                        description=textwrap.dedent(description), usage=usage)
     
     parser.add_argument('rois_dir', type=str,
                         help="Directory with ROI files")
@@ -54,32 +67,25 @@ if __name__ == "__main__":
     
     # path object
     rois_path = Path(rois_dir)
-    out_path = Path(output_dir)
-    
-    if rois_path.suffix == ".zip":
-        unzipped = rois_path.parent.joinpath(rois_path.stem)
-        if not unzipped.exists():
-            # unzip folder
-            with ZipFile(rois_path, 'r') as zip:
-                zip.extractall(path=unzipped)
-            print(f"\nINFO Creating unzipped folder: {unzipped}\n")
-        else:
-            print(f"\nINFO Using existing folder: {unzipped}\n")
-        rois_path = unzipped
-    print(rois_path)
+    if output_dir=="":
+        out_path = rois_path.parent
+    else:
+        out_path = Path(output_dir)
+    # Creates new output directory paths
+    cell_path = out_path.joinpath(rois_path.stem + "_wholecell")
+    nucl_path = out_path.joinpath(rois_path.stem + "_nucleus")
+    # creates directories if neccesary
+    for d in [out_path, cell_path, nucl_path]:
+        try: d.mkdir()
+        except FileExistsError:
+            print(f"INFO Directory already exists: '{d}'\n")
     
     # list of all .roi filenames - alphabetycal order
     roi_files = sorted(rois_path.glob("*.roi"))
     print(f"INFO Founded {len(roi_files)} roi files in the given directory.\n")
     # Create dictionaries
-    roi_areas = {}              # {fname: roi_area}
-    roi_centroid = {}           # {fname: centroid}
-    roi_poly = {}               # {fname: polyygon}
-    for fname in roi_files:
-        p = str2polygon(fname)
-        roi_poly[fname.name] = p
-        roi_areas[fname.name] = p.area  # tmp list
-        roi_centroid[fname.name] = [x[0] for x in p.centroid.xy]
+    roi_poly, roi_areas, roi_centroid = create_roi_dicts(roi_files)
+    
     # Finds pair correspondence
     roi_pairs = {}
     while len(roi_areas) != 0:
@@ -94,18 +100,15 @@ if __name__ == "__main__":
                 roi_pairs[max_value_key] = key
                 roi_areas.pop(key)
                 break
-    # Creates output directory
-    try: out_path.mkdir()
-    except FileExistsError:
-        print(f"INFO Output directory already exists: '{out_path}'\n")
+ 
     # Do the re-naming
     for i, key in enumerate(roi_pairs):
         # create new filenames (basename only)
         new_roi_cell = f"c{i+1:02}_" + key
         new_roi_nucl = f"n{i+1:02}_" + roi_pairs[key]
         # new full paths
-        new_cell = out_path.joinpath(new_roi_cell)
-        new_nucl = out_path.joinpath(new_roi_nucl)
+        new_cell = cell_path.joinpath(new_roi_cell)
+        new_nucl = nucl_path.joinpath(new_roi_nucl)
         # old full paths
         old_cell = rois_path.joinpath(key)             # cell
         old_nucl = rois_path.joinpath(roi_pairs[key])  # nucleus
@@ -114,8 +117,10 @@ if __name__ == "__main__":
         print(f"INFO Created new file: {s}")
         s = shutil.copy(old_nucl, new_nucl)
         print(f"INFO Created new file: {s}\n")
-        # ziped folder
-    s = shutil.make_archive(out_path, "zip", out_path)
-    print(f"INFO Created new file: {s}\n")
+    # ziped folders
+    #s = shutil.make_archive(cell_path, format="zip", root_dir=cell_path)
+    #print(f"INFO Created new file: {s}\n")
+    #s = shutil.make_archive(nucl_path, format="zip", root_dir=nucl_path)
+    #print(f"INFO Created new file: {s}\n")
 
     sys.exit()

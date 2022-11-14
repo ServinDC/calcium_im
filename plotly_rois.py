@@ -6,15 +6,10 @@
 from roifile import ImagejRoi
 from shapely.geometry import Polygon
 
-def str2roi(filename):
-    roi_path = Path(filename)
-    return ImagejRoi.fromfile(roi_path)
-
-def roi2polygon(imagej_roi):
-    return Polygon(imagej_roi.coordinates())
-
 def str2polygon(filename):
-    return roi2polygon(str2roi(filename))
+    roi_path = Path(filename)
+    imagej_roi = ImagejRoi.fromfile(roi_path)
+    return Polygon(imagej_roi.coordinates())
 
 ################################################################################
 if __name__ == "__main__":
@@ -22,17 +17,15 @@ if __name__ == "__main__":
     from argparse import ArgumentParser, RawTextHelpFormatter
     import textwrap
     from pathlib import Path
-    from zipfile import ZipFile
+    #from zipfile import ZipFile
     import plotly.graph_objects as go
     import plotly.io as pio
     pio.templates.default='plotly_dark'
     
     print("")
-    #script = f"{__file__.split('/')[-1]}"
     script = Path(__file__).name
     
     usage = ("%(prog)s folder_with_roi_files [-h] [-o]")
-    
     description = """
     Creates an interactive plot for the .roi files inside the given directory.
         """
@@ -53,26 +46,23 @@ if __name__ == "__main__":
     if output_dir != "":
         out_path = Path(output_dir)
         out_path = out_path.parent.joinpath(out_path.stem).with_suffix(".html")
-    else: 
-        new_html = f"rois_plotly_{rois_path.name}.html"
-        out_path = rois_path.joinpath(new_html)
+    else:
+        new_html = f"plotly_{rois_path.name}.html"
+        out_path = rois_path.parent.joinpath(new_html)
     
     if rois_path.suffix == ".zip":
-        unzipped = rois_path.parent.joinpath(rois_path.stem)
-        if not unzipped.exists():
-            # unzip folder
-            with ZipFile(rois_path, 'r') as zip:
-                zip.extractall(path=unzipped)
-            print(f"\nINFO Creating unzipped folder: {unzipped}\n")
-        else:
-            print(f"\nINFO Using existing folder: {unzipped}\n")
-        rois_path = unzipped
+        print("INFO Only unzipped directories as input")
+        sys.exit()
+        # unzipped = rois_path.parent.joinpath(rois_path.stem)
+        # if not unzipped.exists():
+        #     # unzip folder
+        #     with ZipFile(rois_path, 'r') as zip:
+        #         zip.extractall(path=unzipped)
+        #     print(f"\nINFO Creating unzipped folder: {unzipped}\n")
+        # else:
+        #     print(f"\nINFO Using existing folder: {unzipped}\n")
+        # rois_path = unzipped
 
-    # Creates output directory
-    #try: out_path.mkdir()
-    #except FileExistsError:
-    #    print(f"INFO Output directory already exists: '{out_path}'\n")
-    
     # list of all .roi filenames - alphabetycal order
     roi_files = sorted(rois_path.glob("*.roi"))
     
